@@ -7,5 +7,6 @@ import (
 
 func App() {
 
-	config.InitCqlShema("chat", "localhost:")
+	config.InitRedis()
+	
 }
