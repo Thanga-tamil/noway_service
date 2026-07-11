@@ -2,24 +2,28 @@ package config
 
 import (
 	"log"
-	"context"
 	"github.com/redis/go-redis/v9"
 )
 
-func InitRedis() {
+var goRedis *redis.Client
+
+func InitRedis(c Cfg) {
 
 	log.Println("Initializing redis instance")
 
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+	addr := c.Rcache.Host+":"+c.Rcache.Port
+
+	log.Printf("redis address '%s'\n", addr)
+
+	goRedis = redis.NewClient(&redis.Options{
+		Addr:     addr,
 		Password: "", // no password
 		DB:       0,  // use default DB
 		Protocol: 2,
 	})
 
-	ctx := context.Background()
-	
-	res := rdb.Get(ctx, "one")
+	log.Println("Redis init success")
 
-	log.Println("retrieved result from redis: ", res)
+	// ctx := context.Background()
+	// res := rdb.Get(ctx, "one")
 }

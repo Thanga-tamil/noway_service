@@ -5,23 +5,25 @@ import (
 	"net/http"
 	"github.com/go-chi/chi"
 
+	"gateway/internal/config"
 	"gateway/internal/api/rest/router"
 	"gateway/internal/app"
-)
-
-const (
-	SERVER_PORT = ":6969"
 )
 
 func main() {
 	log.Println("serve http request response")
 
-	app.App()
+	conf := config.LoadConfig()
+
+	app.App(conf)
 
 	chiRouter := chi.NewRouter()
 
 	router.Route(chiRouter)
 
-	http.ListenAndServe(SERVER_PORT, chiRouter)
+	serverAddr := conf.Host + ":" + conf.Port
 
+	http.ListenAndServe(serverAddr, chiRouter)
+
+	log.Println("HTTP server started with addr: ", serverAddr)
 }

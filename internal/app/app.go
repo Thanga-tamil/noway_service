@@ -1,13 +1,12 @@
 package app
 
 import (
-	//"log"
 	"gateway/internal/config"
 )
 
-func App() {
+func App(c config.Cfg) {
 
-	config.InitRedis()
+	config.InitRedis(c)
 	
-	config.InitSqlite()
+	config.InitSqlite(c)
 }

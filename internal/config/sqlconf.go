@@ -1,0 +1,38 @@
+package config
+
+import (
+	"database/sql"
+	"log"
+
+	// Import the SQLite driver
+	// The underscore import registers the driver with database/sql
+	_ "github.com/mattn/go-sqlite3"
+)
+
+var DB *sql.DB
+
+func InitSqlite(c Cfg) {
+
+	log.Println("Initializing sqlite db")
+
+	// since we're relaying on sqlite, 
+	// there is no tcp connection, matter of fact.. 
+	// we don't even have a database server :) 
+	// isn't it awesome 
+	// but it's only for small scale
+	Type := c.Sqlite.Host
+	port := c.Sqlite.Port
+
+	log.Printf("sqlite type '%s' and file: '%s'\n", Type, port)
+	
+	sqlite, err := sql.Open(Type, port)
+
+	DB = sqlite
+
+	if err != nil {
+		log.Println("Error while opening session with sqlite: ", err)
+		panic(err)
+	}
+
+	log.Println("Sqlite init success")
+}
