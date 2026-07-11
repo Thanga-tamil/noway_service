@@ -17,8 +17,8 @@ func sayHello(w http.ResponseWriter, req *http.Request) {
 	defer log.Println("final defer")
 
 	Map := map[string]string{"net/http: API caller Addr": req.RemoteAddr, "message": "hello"}
-	val, _ := json.Marshal(Map)
-	_, _ = w.Write([]byte(val))
+	val, _ := json.Marshal(Map) // conv map to bin
+	_, _ = w.Write([]byte(val)) 
 
 	log.Println("I'm anticipating this to be logged in console after wrting the response to client")
 	
