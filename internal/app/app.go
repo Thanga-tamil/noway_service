@@ -9,4 +9,5 @@ func App() {
 
 	config.InitRedis()
 	
+	config.InitSqlite()
 }
