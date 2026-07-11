@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi"
 
 	"gateway/internal/api/rest/router"
+	"gateway/internal/app"
 )
 
 const (
@@ -14,6 +15,8 @@ const (
 
 func main() {
 	log.Println("serve http request response")
+
+	app.App()
 
 	chiRouter := chi.NewRouter()
 
