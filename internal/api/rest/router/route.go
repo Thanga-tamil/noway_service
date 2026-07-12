@@ -9,7 +9,7 @@ import (
 func Route(chiRouter *chi.Mux)  {
 
 	chiRouter.Get("/register", func(w http.ResponseWriter, r *http.Request) {
-		handler.HandleRegister(w, r)
+		handler.HandleUserRegister(w, r)
 	})
 
 }

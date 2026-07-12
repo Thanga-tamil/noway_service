@@ -9,7 +9,10 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var DB *sql.DB
+var MasterDB *sql.DB
+// update it postgresql for multi tenant support 
+// for now, keep sqlite running
+// var DBs *[]sql.DB
 
 func InitSqlite(c Cfg) {
 
@@ -27,7 +30,7 @@ func InitSqlite(c Cfg) {
 	
 	sqlite, err := sql.Open(Type, port)
 
-	DB = sqlite
+	MasterDB = sqlite
 
 	if err != nil {
 		log.Println("Error while opening session with sqlite: ", err)

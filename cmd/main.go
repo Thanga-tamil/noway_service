@@ -3,14 +3,18 @@ package main
 import (
 	"log"
 	"net/http"
+
 	"github.com/go-chi/chi"
 
-	"gateway/internal/config"
 	"gateway/internal/api/rest/router"
 	"gateway/internal/app"
+	"gateway/internal/config"
 )
 
+
+
 func main() {
+
 	log.Println("serve http request response")
 
 	conf := config.LoadConfig()
@@ -26,4 +30,5 @@ func main() {
 	http.ListenAndServe(serverAddr, chiRouter)
 
 	log.Println("HTTP server started with addr: ", serverAddr)
+
 }
