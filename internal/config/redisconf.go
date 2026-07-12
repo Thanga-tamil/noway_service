@@ -5,17 +5,17 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-var goRedis *redis.Client
+var GoRedis *redis.Client
 
 func InitRedis(c Cfg) {
 
 	log.Println("Initializing redis instance")
 
-	addr := c.Rcache.Host+":"+c.Rcache.Port
+	addr := c.Rcache.Host + ":" + c.Rcache.Port
 
 	log.Printf("redis address '%s'\n", addr)
 
-	goRedis = redis.NewClient(&redis.Options{
+	GoRedis = redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: "", // no password
 		DB:       0,  // use default DB
