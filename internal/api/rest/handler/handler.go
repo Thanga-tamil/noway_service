@@ -8,12 +8,18 @@ import (
 	"errors"
 
 	"encoding/json"
-	"gateway/internal/config"
+	//"gateway/internal/config"
+	"gateway/internal/repository"
 	"net/http"
 
 	"github.com/google/uuid"
 )
 
+const (
+	USERNAME_EMPTY = "username must not be null or empty"
+	EMAILID_EMPTY = "email id must not be null or empty"
+	MOBILENUMBER_EMPTY = "mobile number must not be null or empty"
+)
 type UserRegisterReqPayload struct {
 	Username     string    `json:"username" db:"username"`
 	MobileNumber string    `json:"mobilenumber" db:"mobilenumber"`
@@ -24,18 +30,14 @@ type UserRegisterReqPayload struct {
 func HandleUserRegister(w http.ResponseWriter, req *http.Request) {
 
 	user := parseInputFromReq(w, req)
-	fmt.Printf("%#v\n", user)
+	fmt.Printf("parsed register user input: %#v\n", user)
 
-	stmt := `
-			INSERT INTO USERS 
-			(user_id, username, mobilenumber, email_id, 
-				is_deleted, created_at) 
-			VALUES (?, ?, ?, ?, ?, ?)
-			`
-	
-	useId := uuid.New()
-	result, err := config.MasterDB.Exec(stmt, useId, user.Username, 
-					user.MobileNumber, user.EmailID, 0, time.Now())
+	userId := uuid.New()
+
+	log.Printf("generated uuid: %v for email_id: %s", userId, user.EmailID)
+
+	result, err := repository.SaveRegisterUser(userId, user.Username, 
+						user.MobileNumber, user.EmailID, false, time.Now())
 
 	if err != nil {
 		resp := map[string]any{"message": err.Error(), "status": 400}
@@ -45,7 +47,9 @@ func HandleUserRegister(w http.ResponseWriter, req *http.Request) {
 
 	fmt.Println(result)
 
-	resp := map[string]any{"message": "Registration completed successfully", "status": 200}
+	resp := map[string]any{
+				"message": "Registration completed successfully", 
+		 		"status": 200}
 	val, _ := json.Marshal(resp)
 	w.Write([]byte(val))
 }
@@ -56,7 +60,9 @@ func parseInputFromReq(w http.ResponseWriter, req *http.Request) UserRegisterReq
 	err := json.NewDecoder(req.Body).Decode(&user)
 
 	if err != nil {
-		resp := map[string]any{"message": "Request body must not be null", "status": 400}
+		resp := map[string]any{
+					"message": "Request body must not be null",
+					"status": 400}
 
 		val, _ := json.Marshal(resp)
 
@@ -81,11 +87,11 @@ func parseInputFromReq(w http.ResponseWriter, req *http.Request) UserRegisterReq
 
 func validateInput(w http.ResponseWriter, user UserRegisterReqPayload) error {
 	if len(strings.TrimSpace(user.Username)) == 0 { 
-		return errors.New("username must not be null or empty")
+		return errors.New(USERNAME_EMPTY)
 	} else if len(strings.TrimSpace(user.EmailID)) == 0 { 
-		return errors.New("email id must not be null or empty")
+		return errors.New(EMAILID_EMPTY)
 	} else if len(strings.TrimSpace(user.MobileNumber)) == 0 { 
-		return errors.New("mobile number must not be null or empty")
+		return errors.New(MOBILENUMBER_EMPTY)
 	} 
 
 	return nil

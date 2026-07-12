@@ -2,6 +2,9 @@ package repository
 
 import (
 	"time"
+	"database/sql"
+	"github.com/google/uuid"
+	"gateway/internal/config"
 )
 
 type User struct {
@@ -17,3 +20,15 @@ type User struct {
 	UpdatedAt    time.Time `json:"updated_at" db:"updated_at"`
 }
 
+func SaveRegisterUser(useId uuid.UUID, username, mobileNumber, emailID string, IsDeleted bool, now time.Time) (sql.Result, error)  {
+
+	Q := `
+		INSERT INTO USERS 
+		(user_id, username, mobilenumber, email_id, 
+		is_deleted, created_at) 
+		VALUES (?, ?, ?, ?, ?, ?)
+		`
+	result, err := config.MasterDB.Exec(Q, useId, username, mobileNumber, emailID, IsDeleted, now)
+
+	return result, err
+}
