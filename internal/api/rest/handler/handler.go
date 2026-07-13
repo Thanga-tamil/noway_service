@@ -19,7 +19,7 @@ func HandleUserRegister(w http.ResponseWriter, req *http.Request) {
 	result, err := service.RegisterService(user)
 
 	if err != nil {
-		resp := map[string]any{"message": err.Error(), "status": 400}
+		resp := map[string]any{"status": 400, "message": err.Error()}
 		val, _ := json.Marshal(resp)
 		w.Write([]byte(val))
 	}
@@ -27,14 +27,15 @@ func HandleUserRegister(w http.ResponseWriter, req *http.Request) {
 	fmt.Println(result)
 
 	resp := map[string]any{
-				"message": "Registration completed successfully", 
-		 		"status": 200}
+				"status": 200,
+				"message": "Registration completed successfully"}
+
 	val, _ := json.Marshal(resp)
-	
 	w.Write([]byte(val))
 }
 
-func parseInputFromReq(w http.ResponseWriter, req *http.Request) dto.UserRegisterReqPayload {
+func parseInputFromReq(w http.ResponseWriter, 
+			req *http.Request) dto.UserRegisterReqPayload {
 
 	var user dto.UserRegisterReqPayload
 	err := json.NewDecoder(req.Body).Decode(&user)
@@ -42,8 +43,8 @@ func parseInputFromReq(w http.ResponseWriter, req *http.Request) dto.UserRegiste
 	// EOF : end of file error might occur
 	if err != nil {
 		resp := map[string]any{
-					"message": "Request body must not be null",
-					"status": 400}
+					"status": 400,
+					"message": "Request body must not be null"}
 
 		val, _ := json.Marshal(resp)
 
@@ -53,7 +54,7 @@ func parseInputFromReq(w http.ResponseWriter, req *http.Request) dto.UserRegiste
 	} else {
 		err := service.ValidateInput(w, user)
 		if err != nil {
-			msg := map[string]any{"message": err.Error(), "status": 400}
+			msg := map[string]any{"status": 400, "message": err.Error()}
 
 			val, _ := json.Marshal(msg)
 			w.Write([]byte(val))
@@ -64,3 +65,30 @@ func parseInputFromReq(w http.ResponseWriter, req *http.Request) dto.UserRegiste
 
 	return user
 }
+
+
+func GenerateJwtToken(w http.ResponseWriter, req *http.Request) {
+
+	userId := req.Header.Get("userId")
+
+	if len(userId) == 0 {
+		resp := map[string]any{"message": "userId can not be null or empty",
+						"status": 400}
+
+		val, _ := json.Marshal(resp)
+		w.Write([]byte(val))
+		return
+	}
+
+	jwt, err := service.ServeJwt(userId)
+
+	if err != nil {
+		log.Printf("Error on return of ServeJwt: %s", err.Error())
+		panic(err)
+	}
+
+	resp := map[string]any{ "status": 200, "jwtToken": jwt}
+	val, _ := json.Marshal(resp)
+	w.Write([]byte(val))
+}
+
