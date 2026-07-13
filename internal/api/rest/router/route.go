@@ -12,4 +12,7 @@ func Route(chiRouter *chi.Mux)  {
 		handler.HandleUserRegister(w, r)
 	})
 
+	chiRouter.Get("/jwt", func(w http.ResponseWriter, r *http.Request) {
+		handler.GenerateJwtToken(w, r)
+	})
 }
