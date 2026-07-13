@@ -4,6 +4,7 @@ import (
 	"time"
 	"database/sql"
 	"github.com/google/uuid"
+
 	"gateway/internal/config"
 )
 
