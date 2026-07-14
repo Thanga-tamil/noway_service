@@ -1,23 +1,10 @@
 package config
 
 import (
-	"log"
 	"os"
 	"encoding/json"
+	"github.com/sirupsen/logrus"
 )
-
-// {
-//     "host": "localhost",
-//     "port": "6969",
-//     "sqlite": {
-//         "host": "sqlite3",
-//         "port": "chats.db"
-//     },
-//     "redis": {
-//         "host": "localhost",
-//         "port": "6379"
-//     }
-// }
 
 type Cfg struct {
 	Host string `json:"host"`
@@ -36,22 +23,25 @@ type redisCache struct {
 	Port string `json:"port"`
 }
 
+const(
+	CONF_PATH = "config.json"
+)
+
 func LoadConfig() Cfg {
 
-	file, err := os.Open("config.json")
+	file, err := os.Open(CONF_PATH)
 
 	if err != nil {
-		log.Fatalf("Error while opening %s file \n", err.Error())
+		logrus.Fatalf("Error while opening %s file \n", err.Error())
 	}
 
 	var c Cfg 
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&c)
 	if err != nil {
-		log.Fatalf("Error decoding JSON: %v", err)
+		logrus.Fatalf("Error decoding JSON: %v", err)
 	}
-
-	log.Println("decoded config.json file: ", c)
+	logrus.Printf("decoded config.json file: %#v\n", c)
 
 	return c
 }

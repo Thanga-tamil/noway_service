@@ -2,11 +2,11 @@ package service
 
 import (
 	"os"
-	"log"
-	"fmt"
 	"time"
 	"encoding/json"
+
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/sirupsen/logrus"
 )
 
 type SecretJwk struct {
@@ -18,12 +18,12 @@ type SecretJwk struct {
 
 func ServeJwt(username string) (string, error) {
 
-	log.Println("dev inprogress > Generate JWT with sign key: ")
+	logrus.Println("dev inprogress > Generate JWT with sign key: ")
 
 	file, err := os.Open("secret.jwk")
 
 	if err != nil {
-		log.Printf("Error while opening JWT secret key file: %s", err.Error())
+		logrus.Printf("Error while opening JWT secret key file: %s", err.Error())
 		panic(err)
 	}
 
@@ -32,7 +32,7 @@ func ServeJwt(username string) (string, error) {
 	dec := json.NewDecoder(file)
 	_ = dec.Decode(&secretJwk)
 
-	fmt.Printf("%+v\n", secretJwk)
+	logrus.Printf("%+v\n", secretJwk)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, 
         jwt.MapClaims{ 
@@ -46,7 +46,7 @@ func ServeJwt(username string) (string, error) {
 		return "", err
 	}
 
-	log.Println("Generated Jwt token: ", jwtToken)
+	logrus.Println("Generated Jwt token: ", jwtToken)
 	
 	return jwtToken, nil
 
