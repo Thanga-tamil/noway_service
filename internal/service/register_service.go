@@ -1,30 +1,37 @@
 package service
 
 import (
-	"log"
 	"time"
 	"errors"
 	"strings"
 	"net/http"
-	"database/sql"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 
 	"gateway/internal/dto"
 	"gateway/internal/utils"
 	"gateway/internal/repository"
 )
 
-func RegisterService(user dto.UserRegisterReqPayload) (sql.Result, error) {
+func RegisterService(user dto.UserRegisterReqPayload) (string, error) {
 
 	userId := uuid.New()
 
-	log.Printf("generated uuid: %v for email_id: %s", userId, user.EmailID)
+	logrus.Printf("generated uuid: %v for email_id: %s", userId, user.EmailID)
 
 	result, err := repository.SaveRegisterUser(userId, user.Username, 
 						user.MobileNumber, user.EmailID, false, time.Now())
 
+	logrus.Info("sqlite user register insertion result: ", result)
 
-	return result, err
+	jwt, err := ServeJwt(userId.String())
+
+	if err != nil {
+		logrus.Errorf("Error on return of ServeJwt: %s", err.Error())
+		panic(err)
+	}
+
+	return jwt, err
 }
 
 func ValidateInput(w http.ResponseWriter, user dto.UserRegisterReqPayload) error {

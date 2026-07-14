@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"github.com/google/uuid"
 
-	"gateway/internal/config"
+	"gateway/internal/app"
 )
 
 type User struct {
@@ -29,7 +29,7 @@ func SaveRegisterUser(useId uuid.UUID, username, mobileNumber, emailID string, I
 		is_deleted, created_at) 
 		VALUES (?, ?, ?, ?, ?, ?)
 		`
-	result, err := config.MasterDB.Exec(Q, useId, username, mobileNumber, emailID, IsDeleted, now)
+	result, err := app.MasterDB.Exec(Q, useId, username, mobileNumber, emailID, IsDeleted, now)
 
 	return result, err
 }

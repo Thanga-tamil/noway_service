@@ -1,12 +1,32 @@
 package app
 
 import (
+	"database/sql"
+	"github.com/sirupsen/logrus"
+
 	"gateway/internal/config"
 )
 
+var MasterDB *sql.DB
+
 func App(c config.Cfg) {
 
-	config.InitRedis(c)
-	
-	config.InitSqlite(c)
+	logrus.Info("Initialize required services from app.go")
+
+	if pong, err := config.InitRedis(c); err != nil {
+		logrus.Fatalf("Error connecting to Redis: %s", err)
+	} else {
+		logrus.Info("Connected to Redis:", pong)
+		logrus.Info("Redis init success")
+	}
+
+	if sqlite, err := config.InitSqlite(c); err != nil {
+		logrus.Error("Error while opening session with sqlite: ", err)
+		panic(err)
+	} else {
+		MasterDB = sqlite
+		logrus.Info("Sqlite init success")
+	}
+ 
+	logrus.Info("Required services initialization completed successfully")
 }

@@ -2,21 +2,21 @@ package config
 
 import (
 	"database/sql"
-	"log"
+	"github.com/sirupsen/logrus"
 
 	// Import the SQLite driver
 	// The underscore import registers the driver with database/sql
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var MasterDB *sql.DB
+// var MasterDB *sql.DB
 // update it postgresql for multi tenant support 
 // for now, keep sqlite running
 // var DBs *[]sql.DB
 
-func InitSqlite(c Cfg) {
+func InitSqlite(c Cfg) (*sql.DB, error) {
 
-	log.Println("Initializing sqlite db")
+	logrus.Info("Initializing sqlite db")
 
 	// since we're relaying on sqlite, 
 	// there is no tcp connection, matter of fact.. 
@@ -26,16 +26,10 @@ func InitSqlite(c Cfg) {
 	Type := c.Sqlite.Host
 	port := c.Sqlite.Port
 
-	log.Printf("sqlite type '%s' and file: '%s'\n", Type, port)
+	logrus.Printf("sqlite type '%s' and file: '%s'\n", Type, port)
 	
 	sqlite, err := sql.Open(Type, port)
 
-	MasterDB = sqlite
+	return sqlite, err
 
-	if err != nil {
-		log.Println("Error while opening session with sqlite: ", err)
-		panic(err)
-	}
-
-	log.Println("Sqlite init success")
 }

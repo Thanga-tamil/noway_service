@@ -1,10 +1,10 @@
 package main
 
 import (
-	"log"
+    "log"
 	"net/http"
-
 	"github.com/go-chi/chi"
+	"github.com/sirupsen/logrus"
 
 	"gateway/internal/api/rest/router"
 	"gateway/internal/app"
@@ -12,10 +12,20 @@ import (
 )
 
 
+var (
+    WarningLog *log.Logger
+    InfoLog   *log.Logger
+    ErrorLog   *log.Logger
+)
 
 func main() {
+	logrus.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp:   true,
+		DisableColors:   false,
+		TimestampFormat: "2006-01-02 15:04:05",
+	})
 
-	log.Println("serve http request response")
+	logrus.Info("Serve http request response using engine 'net/http'")
 
 	conf := config.LoadConfig()
 
@@ -29,6 +39,6 @@ func main() {
 
 	http.ListenAndServe(serverAddr, chiRouter)
 
-	log.Println("HTTP server started with addr: ", serverAddr)
+	logrus.Info("Http server started in addr: ", serverAddr)
 
 }

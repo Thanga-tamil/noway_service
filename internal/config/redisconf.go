@@ -1,29 +1,34 @@
 package config
 
 import (
-	"log"
+	"context"
+	"github.com/sirupsen/logrus"
 	"github.com/redis/go-redis/v9"
 )
 
 var GoRedis *redis.Client
 
-func InitRedis(c Cfg) {
+var ctx = context.Background()
 
-	log.Println("Initializing redis instance")
+func InitRedis(c Cfg) (string, error) {
+
+	logrus.Info("Initializing redis instance")
 
 	addr := c.Rcache.Host + ":" + c.Rcache.Port
 
-	log.Printf("redis address '%s'\n", addr)
+	logrus.Printf("redis address '%s'\n", addr)
 
+	// Connect to Redis
 	GoRedis = redis.NewClient(&redis.Options{
 		Addr:     addr,
-		Password: "", // no password
-		DB:       0,  // use default DB
-		Protocol: 2,
+		Password: "", // No password for local development
+		DB:       0, // Default DB
 	})
 
-	log.Println("Redis init success")
+	// Ping the Redis server to check the connection
+	pong, err := GoRedis.Ping(ctx).Result()
 
-	// ctx := context.Background()
-	// res := rdb.Get(ctx, "one")
+	return pong, err
 }
+
+
