@@ -2,8 +2,10 @@ package config
 
 import (
 	"context"
-	"github.com/sirupsen/logrus"
+	"strconv"
+
 	"github.com/redis/go-redis/v9"
+	"github.com/sirupsen/logrus"
 )
 
 var GoRedis *redis.Client
@@ -14,7 +16,7 @@ func InitRedis(c Cfg) (string, error) {
 
 	logrus.Info("Initializing redis instance")
 
-	addr := c.Rcache.Host + ":" + c.Rcache.Port
+	addr := c.Rcache.Host + ":" + strconv.Itoa(c.Rcache.Port)
 
 	logrus.Printf("redis address '%s'\n", addr)
 
