@@ -7,20 +7,24 @@ import (
 )
 
 type Cfg struct {
-	Host string `json:"host"`
-	Port string `json:"port"`
-	Sqlite sqlite `json:"sqlite"`
-	Rcache redisCache `json:"redis"`
+	Host 	string 		`json:"host"`
+	Port 	int	 		`json:"port"`
+	Postgre postgre 	`json:"sql"`
+	Rcache 	redisCache 	`json:"redis"`
 }
 
-type sqlite struct {
-	Host string `json:"host"`
-	Port string `json:"port"`
+type postgre struct {
+	Type 		 string `json:"type"`
+	Host 		 string `json:"host"`
+	Port 		 int	`json:"port"`
+	Dbname 		 string `json:"dbname"`
+	User 		 string `json:"user"`
+	Password 	 string `json:"password"`
 }
 	
 type redisCache struct {
 	Host string `json:"host"`
-	Port string `json:"port"`
+	Port int 	`json:"port"`
 }
 
 const(

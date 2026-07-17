@@ -2,6 +2,7 @@ package main
 
 import (
     "log"
+	"strconv"
 	"net/http"
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
@@ -22,7 +23,7 @@ func main() {
 	logrus.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp:   true,
 		DisableColors:   false,
-		TimestampFormat: "2006-01-02 15:04:05",
+		// TimestampFormat: "2006-01-02 15:04:05",
 	})
 
 	logrus.Info("Serve http request response using engine 'net/http'")
@@ -35,7 +36,7 @@ func main() {
 
 	router.Route(chiRouter)
 
-	serverAddr := conf.Host + ":" + conf.Port
+	serverAddr := conf.Host + ":" + strconv.Itoa(conf.Port)
 
 	http.ListenAndServe(serverAddr, chiRouter)
 
