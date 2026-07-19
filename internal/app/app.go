@@ -1,10 +1,10 @@
 package app
 
 import (
-	//"database/sql"
 	"github.com/sirupsen/logrus"
 
 	"gateway/internal/config"
+	"gateway/internal/service"
 )
 
 func App(c config.Cfg) {
@@ -20,6 +20,9 @@ func App(c config.Cfg) {
 		logrus.Info("Redis init success")
 	}
 
+	if err := service.LoadJwtSignKeyInCache(); err != nil {
+		// todo
+	}
  
 	logrus.Info("Required services initialization completed successfully")
 }

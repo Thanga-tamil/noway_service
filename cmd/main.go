@@ -1,12 +1,14 @@
 package main
 
 import (
-    "log"
-	"strconv"
+	"log"
 	"net/http"
+	"strconv"
+
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
 
+	"gateway/internal/api/rest/middleware"
 	"gateway/internal/api/rest/router"
 	"gateway/internal/app"
 	"gateway/internal/config"
@@ -34,12 +36,14 @@ func main() {
 
 	chiRouter := chi.NewRouter()
 
+	chiRouter.Use(middleware.MyMiddleware)
+
 	router.Route(chiRouter)
 
 	serverAddr := conf.Host + ":" + strconv.Itoa(conf.Port)
 
-	http.ListenAndServe(serverAddr, chiRouter)
-
 	logrus.Info("Http server started in addr: ", serverAddr)
+
+	http.ListenAndServe(serverAddr, chiRouter)
 
 }
