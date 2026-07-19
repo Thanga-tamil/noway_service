@@ -2,18 +2,17 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"strconv"
+	"net/http"
 
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
 
-	"gateway/internal/api/rest/middleware"
-	"gateway/internal/api/rest/router"
 	"gateway/internal/app"
 	"gateway/internal/config"
+	"gateway/internal/api/rest/router"
+	"gateway/internal/api/rest/middleware"
 )
-
 
 var (
     WarningLog *log.Logger

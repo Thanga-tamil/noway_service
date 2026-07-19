@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"strings"
@@ -10,6 +11,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 
+	"gateway/internal/config"
 	"gateway/internal/dto"
 	"gateway/internal/repository"
 	"gateway/internal/utils"
@@ -39,3 +41,12 @@ func ValidateInput(w http.ResponseWriter, user dto.UserRegisterReqPayload) error
 
 	return nil
 }
+
+func StoreJwtInRedis(userId, token string) error {
+	ctx := context.Background()
+
+	key := "user:" + userId + ":access"
+
+	return config.GoRedis.Set(ctx, key, token, 10000).Err()
+}
+

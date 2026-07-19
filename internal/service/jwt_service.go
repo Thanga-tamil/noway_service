@@ -5,8 +5,8 @@ import (
 	"time"
 	"encoding/json"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/sirupsen/logrus"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type SecretJwk struct {
@@ -18,9 +18,11 @@ type SecretJwk struct {
 
 var JwtSignK []byte
 
+const ( SECRET_K = "secret.jwk" )
+
 func LoadJwtSignKeyInCache() error {
 
-	file, err := os.Open("secret.jwk")
+	file, err := os.Open(SECRET_K)
 
 	if err != nil {
 		logrus.Printf("Error while opening JWT secret key file: %s", err.Error())
@@ -37,9 +39,8 @@ func LoadJwtSignKeyInCache() error {
 		return err
 	}
 
-	logrus.Printf("%+v\n", secretJwk)
-
 	JwtSignK = []byte(secretJwk.K)
+	logrus.Println("JWT secret key has been added in inmemory")
 
 	return nil
 }
@@ -63,3 +64,4 @@ func ServeJwt(username string) (string, error) {
 	return jwtToken, nil
 
 }
+

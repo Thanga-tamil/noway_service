@@ -13,7 +13,6 @@ import (
 	"gateway/internal/service"
 )
 
-
 func HandleUserRegister(w http.ResponseWriter, req *http.Request) {
 	tenantDB := req.Context().Value(req.Header.Get("tenant-x"))
 
@@ -31,8 +30,14 @@ func HandleUserRegister(w http.ResponseWriter, req *http.Request) {
 	go service.RegisterService(tenantDB.(*sqlx.DB), userId, user)
 
 	jwt, err := service.ServeJwt(userId.String())
-
 	if err != nil {
+		resp := map[string]any{"status": 400, "message": err.Error()}
+		val, _ := json.Marshal(resp)
+		w.Write([]byte(val))
+		return
+	}
+	
+	if err := service.StoreJwtInRedis(userId.String(), jwt); err != nil {
 		resp := map[string]any{"status": 400, "message": err.Error()}
 		val, _ := json.Marshal(resp)
 		w.Write([]byte(val))
