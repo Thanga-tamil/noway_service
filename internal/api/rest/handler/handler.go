@@ -1,10 +1,12 @@
 package handler
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
+	"encoding/json"
 
+	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 
 	"gateway/internal/dto"
@@ -13,6 +15,8 @@ import (
 
 
 func HandleUserRegister(w http.ResponseWriter, req *http.Request) {
+	tenantDB := req.Context().Value(req.Header.Get("tenant-x"))
+
 	user, err := parseInputFromReq(w, req)
 
 	if err != nil {
@@ -22,7 +26,11 @@ func HandleUserRegister(w http.ResponseWriter, req *http.Request) {
 
 	logrus.Printf("parsed register user input: %#v\n", user)
 
-	jwt, err := service.RegisterService(user)
+	userId := uuid.New()
+
+	go service.RegisterService(tenantDB.(*sqlx.DB), userId, user)
+
+	jwt, err := service.ServeJwt(userId.String())
 
 	if err != nil {
 		resp := map[string]any{"status": 400, "message": err.Error()}

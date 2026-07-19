@@ -2,12 +2,26 @@ package repository
 
 import (
 	"time"
-	"database/sql"
 	"github.com/google/uuid"
-
+	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 )
 
-func SaveRegisterUser(useId uuid.UUID, username, mobileNumber, emailID string, IsDeleted bool, now time.Time) (sql.Result, error)  {
+func SaveRegisterUser(db *sqlx.DB, useId uuid.UUID, username, mobileNumber, 
+			emailID string, isDeleted bool, now time.Time) error  {
 
-	return nil, nil
+	stmt := `insert into 
+				users (user_id, username, email_id, mobile_number, created_at, is_deleted)
+		     values ($1, $2, $3, $4, $5, $6)`
+
+	result, err := db.Exec(stmt, useId, username, emailID, mobileNumber, now, isDeleted)
+
+	if err != nil {
+		logrus.Error("error while inserting into table user:: ", err.Error())
+		return err
+	}
+
+	logrus.Info("user register db insert result:: ", result)
+
+	return nil
 }

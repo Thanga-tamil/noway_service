@@ -16,23 +16,35 @@ type SecretJwk struct {
 	Alg string `json:"alg"`
 }
 
-func ServeJwt(username string) (string, error) {
+var JwtSignK []byte
 
-	logrus.Println("dev inprogress > Generate JWT with sign key: ")
+func LoadJwtSignKeyInCache() error {
 
 	file, err := os.Open("secret.jwk")
 
 	if err != nil {
 		logrus.Printf("Error while opening JWT secret key file: %s", err.Error())
-		panic(err)
+		return err
 	}
 
 	var secretJwk SecretJwk
 
 	dec := json.NewDecoder(file)
-	_ = dec.Decode(&secretJwk)
+	err = dec.Decode(&secretJwk)
+
+	if err != nil {
+		logrus.Printf("Error while decoding JWT secret sign key: %s", err.Error())
+		return err
+	}
 
 	logrus.Printf("%+v\n", secretJwk)
+
+	JwtSignK = []byte(secretJwk.K)
+
+	return nil
+}
+
+func ServeJwt(username string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, 
         jwt.MapClaims{ 
@@ -40,7 +52,7 @@ func ServeJwt(username string) (string, error) {
         "exp": time.Now().Add(time.Hour * 24).Unix(), 
         })
 
-    jwtToken, err := token.SignedString([]byte(secretJwk.K))
+    jwtToken, err := token.SignedString(JwtSignK)
 
 	if err != nil {
 		return "", err
