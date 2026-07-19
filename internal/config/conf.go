@@ -49,3 +49,4 @@ func LoadConfig() Cfg {
 
 	return c
 }
+

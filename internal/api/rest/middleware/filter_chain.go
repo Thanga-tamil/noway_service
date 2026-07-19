@@ -7,11 +7,8 @@ import (
 	"gateway/internal/config"
 )
 
-// HTTP middleware setting a value on the request context
 func MyMiddleware(next http.Handler) http.Handler {
   return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-    // create new context from `r` request context, and assign key `"user"`
-    // to value of `"123"`
 
 	tenantId := r.Header.Get("tenant-x")
 
