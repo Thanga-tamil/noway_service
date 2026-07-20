@@ -10,7 +10,9 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"gateway/internal/dto"
+	"gateway/internal/utils"
 	"gateway/internal/service"
+	"gateway/internal/response"
 )
 
 func HandleUserRegister(w http.ResponseWriter, req *http.Request) {
@@ -19,37 +21,31 @@ func HandleUserRegister(w http.ResponseWriter, req *http.Request) {
 	user, err := parseInputFromReq(w, req)
 
 	if err != nil {
-		w.Write([]byte(err.Error()))
-		return
+		w.Write([]byte(err.Error())); return
 	}
 
-	logrus.Printf("parsed register user input: %#v\n", user)
+	logrus.Infof("parsed register user input: %#v\n", user)
 
-	userId := uuid.New()
+	userId := uuid.New().String()
 
-	go service.RegisterService(tenantDB.(*sqlx.DB), userId, user)
+	service.RegisterService(tenantDB.(*sqlx.DB), userId, user)
 
-	jwt, err := service.ServeJwt(userId.String())
+	jwt, err := service.ServeJwt(userId)
+
 	if err != nil {
-		resp := map[string]any{"status": 400, "message": err.Error()}
-		val, _ := json.Marshal(resp)
-		w.Write([]byte(val))
-		return
+		handleErr(w, err); return
 	}
 	
-	if err := service.StoreJwtInRedis(userId.String(), jwt); err != nil {
-		resp := map[string]any{"status": 400, "message": err.Error()}
-		val, _ := json.Marshal(resp)
-		w.Write([]byte(val))
-		return
+	if err := service.StoreJwtInRedis(userId, jwt); err != nil {
+		handleErr(w, err); return
 	}
 
-	resp := map[string]any{
-				"status": 200,
-				"jwtToken": jwt,
-				"message": "Registration completed successfully"}
+	res := response.Success("Onboarding completed successfully",
+							utils.STATUS_OK,
+						  	map[string]any{"accessToken": jwt})
 
-	val, _ := json.Marshal(resp)
+	val, _ := json.Marshal(res)
+
 	w.Write([]byte(val))
 }
 
@@ -97,8 +93,16 @@ func GenerateJwtToken(w http.ResponseWriter, req *http.Request) {
 	jwt, err := service.ServeJwt(userId)
 
 	if err != nil {
-		logrus.Printf("Error on return of ServeJwt: %s", err.Error())
+		logrus.Infof("Error on return of ServeJwt: %s", err.Error())
 		panic(err)
+	}
+
+	
+	if err := service.StoreJwtInRedis(userId, jwt); err != nil {
+		resp := map[string]any{"status": 400, "message": err.Error()}
+		val, _ := json.Marshal(resp)
+		w.Write([]byte(val))
+		return
 	}
 
 	resp := map[string]any{ "status": 200, "jwtToken": jwt}
@@ -106,3 +110,10 @@ func GenerateJwtToken(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte(val))
 }
 
+func handleErr(w http.ResponseWriter, err error) {
+
+	resp := response.Error(err.Error(), utils.STATUS_BAD_REQUEST)
+	val, _ := json.Marshal(resp)
+
+	http.Error(w, string(val), utils.STATUS_BAD_REQUEST)
+}

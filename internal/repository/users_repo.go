@@ -2,12 +2,11 @@ package repository
 
 import (
 	"time"
-	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 )
 
-func SaveRegisterUser(db *sqlx.DB, useId uuid.UUID, username, mobileNumber, 
+func SaveRegisterUser(db *sqlx.DB, useId string, username, mobileNumber, 
 			emailID string, isDeleted bool, now time.Time) error  {
 
 	stmt := `insert into 

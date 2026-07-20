@@ -16,12 +16,13 @@ func App(c config.Cfg) {
 	if pong, err := config.InitRedis(c); err != nil {
 		logrus.Fatalf("Error connecting to Redis: %s", err)
 	} else {
-		logrus.Info("Connected to Redis:", pong)
-		logrus.Info("Redis init success")
+		logrus.Infof("Connected to Redis: %s Redis init success", pong)
 	}
 
 	if err := service.LoadJwtSignKeyInCache(); err != nil {
-		// todo
+		logrus.Fatalf("Error while loading Jwt sign key in inmemory: %s", err)
+	} else {
+		logrus.Info("Jwt sign key loaded in memory successfully")
 	}
  
 	logrus.Info("Required services initialization completed successfully")

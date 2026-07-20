@@ -50,7 +50,7 @@ func InitSql(c Cfg) {
 		 tenantDBs = append(tenantDBs, tenantDB)
 	 }
 
-	 logrus.Printf("Tenant datasource from master config: %#v\n", tenantDBs)
+	 logrus.Infof("Tenant datasource from master config: %#v\n", tenantDBs)
 	 loadTenantDBs(c, tenantDBs)
 }
 
