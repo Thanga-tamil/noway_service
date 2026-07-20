@@ -36,7 +36,7 @@ func HandleUserRegister(c *gin.Context) {
 
 	jwt, err := service.ServeJwt(userId)
 
-	if err == nil {
+	if err != nil {
 		handleErr(c, err); return
 	}
 
