@@ -37,10 +37,12 @@ func main() {
 	r := gin.Default() // r := gin.New()
 
 	v1 := r.Group("/api/v1")
+	v2 := r.Group("/api/v2")
 
 	v1.Use(middleware.MyMiddleware())
 	
-	router.Route(v1)
+	router.RouteV1(v1)
+	router.RouteV2(v2)
 
 	r.Run(conf.Host + ":" + strconv.Itoa(conf.Port))
 
