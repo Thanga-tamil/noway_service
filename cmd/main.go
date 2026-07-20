@@ -2,10 +2,9 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"strconv"
 
-	"github.com/go-chi/chi"
+	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 
 	"gateway/internal/api/rest/middleware"
@@ -22,7 +21,7 @@ var (
 )
 
 func main() {
-	
+
 	logrus.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp:   true,
 		DisableColors:   false,
@@ -34,13 +33,16 @@ func main() {
 	conf := config.LoadConfig()
 
 	app.App(conf)
+	
+	r := gin.Default() // r := gin.New()
 
-	r := chi.NewRouter()
+	v1 := r.Group("/api/v1")
 
-	r.Use(middleware.MyMiddleware)
+	v1.Use(middleware.MyMiddleware())
+	
+	router.Route(v1)
 
-	r.Route("/api/v1", router.Route)
-
-	http.ListenAndServe(conf.Host + ":" + strconv.Itoa(conf.Port), r)
+	r.Run(conf.Host + ":" + strconv.Itoa(conf.Port))
 
 }
+

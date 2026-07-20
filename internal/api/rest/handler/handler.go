@@ -1,27 +1,31 @@
 package handler
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
-	"encoding/json"
 
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
+
 	"github.com/sirupsen/logrus"
 
 	"gateway/internal/dto"
-	"gateway/internal/utils"
-	"gateway/internal/service"
 	"gateway/internal/response"
+	"gateway/internal/service"
+	"gateway/internal/utils"
 )
 
-func HandleUserRegister(w http.ResponseWriter, req *http.Request) {
-	tenantDB := req.Context().Value(req.Header.Get("tenant-x"))
+func HandleUserRegister(c *gin.Context) {
+	tenantId := c.Request.Header.Get("tenant-x")
+	tenantDB, _ := c.Get(tenantId)
 
-	user, err := parseInputFromReq(w, req)
+	user, err := parseInputFromReq(c)
 
 	if err != nil {
-		w.Write([]byte(err.Error())); return
+		c.JSON(http.StatusBadRequest, err.Error()); return
 	}
 
 	logrus.Infof("parsed register user input: %#v\n", user)
@@ -32,40 +36,35 @@ func HandleUserRegister(w http.ResponseWriter, req *http.Request) {
 
 	jwt, err := service.ServeJwt(userId)
 
-	if err != nil {
-		handleErr(w, err); return
+	if err == nil {
+		handleErr(c, err); return
 	}
-	
+
 	if err := service.StoreJwtInRedis(userId, jwt); err != nil {
-		handleErr(w, err); return
+		handleErr(c, err); return
 	}
 
 	res := response.Success("Onboarding completed successfully",
 							utils.STATUS_OK,
-						  	map[string]any{"accessToken": jwt})
+							map[string]any{"accessToken": jwt})
 
-	val, _ := json.Marshal(res)
-
-	w.Write([]byte(val))
+	c.JSON(http.StatusOK, res)
 }
 
-func parseInputFromReq(w http.ResponseWriter,
-	 req *http.Request) (dto.UserRegisterReqPayload, error) {
+func parseInputFromReq(c *gin.Context) (dto.UserRegisterReqPayload, error) {
 
 	var user dto.UserRegisterReqPayload
-	err := json.NewDecoder(req.Body).Decode(&user)
+	if err := c.ShouldBindBodyWith(&user, binding.JSON); err != nil {
 
-	// EOF : end of file error might occur
-	if err != nil {
 		logrus.Info("Error while Decode input payload: ", err)
 		resp := map[string]any{
-					"status": 400,
-					"message": "Request body must not be null"}
-		val, _ := json.Marshal(resp)
-		return dto.UserRegisterReqPayload{}, errors.New(string(val))
-	} 
-	
-	if err := service.ValidateInput(w, user); err != nil {
+			"status": 400,
+			"message": "Request body must not be null"}
+			val, _ := json.Marshal(resp)
+			return dto.UserRegisterReqPayload{}, errors.New(string(val))
+	}
+
+	if err := service.ValidateInput(user); err != nil {
 		logrus.Error("input payload validation error: ", err)
 
 		msg := map[string]any{"status": 400, "message": err.Error()}
@@ -77,16 +76,16 @@ func parseInputFromReq(w http.ResponseWriter,
 }
 
 
-func GenerateJwtToken(w http.ResponseWriter, req *http.Request) {
+func GenerateJwtToken(c *gin.Context) {
 
-	userId := req.Header.Get("userId")
+	userId := c.Request.Header.Get("userId")
 
 	if len(userId) == 0 {
 		resp := map[string]any{"message": "userId can not be null or empty",
-						"status": 400}
+		"status": 400}
 
 		val, _ := json.Marshal(resp)
-		w.Write([]byte(val))
+		c.JSON(http.StatusOK, val)
 		return
 	}
 
@@ -97,23 +96,22 @@ func GenerateJwtToken(w http.ResponseWriter, req *http.Request) {
 		panic(err)
 	}
 
-	
+
 	if err := service.StoreJwtInRedis(userId, jwt); err != nil {
 		resp := map[string]any{"status": 400, "message": err.Error()}
 		val, _ := json.Marshal(resp)
-		w.Write([]byte(val))
+		c.JSON(http.StatusOK, val)
 		return
 	}
 
 	resp := map[string]any{ "status": 200, "jwtToken": jwt}
 	val, _ := json.Marshal(resp)
-	w.Write([]byte(val))
+	c.JSON(http.StatusOK, val)
 }
 
-func handleErr(w http.ResponseWriter, err error) {
+func handleErr(c *gin.Context, err error) {
 
 	resp := response.Error(err.Error(), utils.STATUS_BAD_REQUEST)
-	val, _ := json.Marshal(resp)
 
-	http.Error(w, string(val), utils.STATUS_BAD_REQUEST)
+	c.JSON(http.StatusBadRequest, resp)
 }

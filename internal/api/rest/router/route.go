@@ -1,13 +1,20 @@
 package router
 
 import (
-	"github.com/go-chi/chi"
+	"github.com/gin-gonic/gin"
 	"gateway/internal/api/rest/handler"
 )
 
-func Route(chiRouter chi.Router)  {
+func Route(v1 *gin.RouterGroup)  {
 
-	chiRouter.Post("/register", handler.HandleUserRegister)
-	chiRouter.Get("/jwt", handler.GenerateJwtToken)
+	v1.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+
+	v1.POST("/register", handler.HandleUserRegister)
+	v1.GET("/jwt", handler.GenerateJwtToken)
 
 }
+

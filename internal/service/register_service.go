@@ -1,19 +1,18 @@
 package service
 
 import (
-	"time"
+	"context"
 	"errors"
 	"strings"
-	"context"
-	"net/http"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 
-	"gateway/internal/config"
 	"gateway/internal/dto"
-	"gateway/internal/repository"
 	"gateway/internal/utils"
+	"gateway/internal/config"
+	"gateway/internal/repository"
 )
 
 func RegisterService(db *sqlx.DB, userId string, user dto.UserRegisterReqPayload) {
@@ -28,7 +27,7 @@ func RegisterService(db *sqlx.DB, userId string, user dto.UserRegisterReqPayload
 
 }
 
-func ValidateInput(w http.ResponseWriter, user dto.UserRegisterReqPayload) error {
+func ValidateInput(user dto.UserRegisterReqPayload) error {
 	if len(strings.TrimSpace(user.Username)) == 0 { 
 		return errors.New(utils.USERNAME_EMPTY)
 	} else if len(strings.TrimSpace(user.EmailID)) == 0 { 
