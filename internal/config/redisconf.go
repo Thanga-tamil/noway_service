@@ -18,7 +18,7 @@ func InitRedis(c Cfg) (string, error) {
 
 	addr := c.Rcache.Host + ":" + strconv.Itoa(c.Rcache.Port)
 
-	logrus.Printf("redis address '%s'\n", addr)
+	logrus.Infof("redis address '%s'\n", addr)
 
 	// Connect to Redis
 	GoRedis = redis.NewClient(&redis.Options{

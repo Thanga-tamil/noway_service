@@ -3,6 +3,8 @@ package config
 import (
 	"os"
 	"encoding/json"
+
+	"gateway/internal/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -27,13 +29,9 @@ type redisCache struct {
 	Port int 	`json:"port"`
 }
 
-const(
-	CONF_PATH = "config.json"
-)
-
 func LoadConfig() Cfg {
 
-	file, err := os.Open(CONF_PATH)
+	file, err := os.Open(utils.CONF_PATH)
 
 	if err != nil {
 		logrus.Fatalf("Error while opening %s file \n", err.Error())
@@ -45,7 +43,7 @@ func LoadConfig() Cfg {
 	if err != nil {
 		logrus.Fatalf("Error decoding JSON: %v", err)
 	}
-	logrus.Printf("decoded config.json file: %#v\n", c)
+	logrus.Infof("decoded config.json file: %#v\n", c)
 
 	return c
 }

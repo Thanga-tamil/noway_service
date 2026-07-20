@@ -1,12 +1,13 @@
 package service
 
 import (
+	"encoding/json"
+	"gateway/internal/utils"
 	"os"
 	"time"
-	"encoding/json"
 
-	"github.com/sirupsen/logrus"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/sirupsen/logrus"
 )
 
 type SecretJwk struct {
@@ -18,14 +19,12 @@ type SecretJwk struct {
 
 var JwtSignK []byte
 
-const ( SECRET_K = "secret.jwk" )
-
 func LoadJwtSignKeyInCache() error {
 
-	file, err := os.Open(SECRET_K)
+	file, err := os.Open(utils.SECRET_K)
 
 	if err != nil {
-		logrus.Printf("Error while opening JWT secret key file: %s", err.Error())
+		logrus.Infof("Error while opening JWT secret key file: %s", err.Error())
 		return err
 	}
 
@@ -35,7 +34,7 @@ func LoadJwtSignKeyInCache() error {
 	err = dec.Decode(&secretJwk)
 
 	if err != nil {
-		logrus.Printf("Error while decoding JWT secret sign key: %s", err.Error())
+		logrus.Infof("Error while decoding JWT secret sign key: %s", err.Error())
 		return err
 	}
 

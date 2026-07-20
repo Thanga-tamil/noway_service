@@ -2,17 +2,18 @@ package main
 
 import (
 	"log"
-	"strconv"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
 
+	"gateway/internal/api/rest/middleware"
+	"gateway/internal/api/rest/router"
 	"gateway/internal/app"
 	"gateway/internal/config"
-	"gateway/internal/api/rest/router"
-	"gateway/internal/api/rest/middleware"
 )
+
 
 var (
     WarningLog *log.Logger
@@ -21,6 +22,7 @@ var (
 )
 
 func main() {
+	
 	logrus.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp:   true,
 		DisableColors:   false,
@@ -33,16 +35,12 @@ func main() {
 
 	app.App(conf)
 
-	chiRouter := chi.NewRouter()
+	r := chi.NewRouter()
 
-	chiRouter.Use(middleware.MyMiddleware)
+	r.Use(middleware.MyMiddleware)
 
-	router.Route(chiRouter)
+	r.Route("/api/v1", router.Route)
 
-	serverAddr := conf.Host + ":" + strconv.Itoa(conf.Port)
-
-	logrus.Info("Http server started in addr: ", serverAddr)
-
-	http.ListenAndServe(serverAddr, chiRouter)
+	http.ListenAndServe(conf.Host + ":" + strconv.Itoa(conf.Port), r)
 
 }
