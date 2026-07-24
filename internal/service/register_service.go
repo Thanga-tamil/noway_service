@@ -9,10 +9,10 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 
-	"gateway/internal/dto"
-	"gateway/internal/utils"
-	"gateway/internal/config"
-	"gateway/internal/repository"
+	"github.com/Thanga-tamil/noway_service/internal/dto"
+	"github.com/Thanga-tamil/noway_service/internal/utils"
+	"github.com/Thanga-tamil/noway_service/internal/config"
+	"github.com/Thanga-tamil/noway_service/internal/repository"
 )
 
 func RegisterService(db *sqlx.DB, userId string, user dto.UserRegisterReqPayload) {

@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"gateway/internal/api/rest/handler"
+	"github.com/Thanga-tamil/noway_service/internal/api/rest/handler"
 )
 
 func RouteV1(v1 *gin.RouterGroup)  {

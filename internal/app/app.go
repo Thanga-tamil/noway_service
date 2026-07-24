@@ -3,8 +3,8 @@ package app
 import (
 	"github.com/sirupsen/logrus"
 
-	"gateway/internal/config"
-	"gateway/internal/service"
+	"github.com/Thanga-tamil/noway_service/internal/config"
+	"github.com/Thanga-tamil/noway_service/internal/service"
 )
 
 func App(c config.Cfg) {

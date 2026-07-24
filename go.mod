@@ -1,4 +1,5 @@
-module gateway
+module github.com/Thanga-tamil/noway_service 
+//github.com/Thanga-tamil/noway_service
 
 go 1.26.5
 

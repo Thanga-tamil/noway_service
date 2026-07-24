@@ -12,10 +12,10 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"gateway/internal/dto"
-	"gateway/internal/response"
-	"gateway/internal/service"
-	"gateway/internal/utils"
+	"github.com/Thanga-tamil/noway_service/internal/dto"
+	"github.com/Thanga-tamil/noway_service/internal/response"
+	"github.com/Thanga-tamil/noway_service/internal/service"
+	"github.com/Thanga-tamil/noway_service/internal/utils"
 )
 
 func HandleUserRegister(c *gin.Context) {

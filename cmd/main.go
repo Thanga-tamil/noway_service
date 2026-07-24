@@ -7,10 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 
-	"gateway/internal/api/rest/middleware"
-	"gateway/internal/api/rest/router"
-	"gateway/internal/app"
-	"gateway/internal/config"
+	"github.com/Thanga-tamil/noway_service/internal/api/rest/middleware"
+	"github.com/Thanga-tamil/noway_service/internal/api/rest/router"
+	"github.com/Thanga-tamil/noway_service/internal/app"
+	"github.com/Thanga-tamil/noway_service/internal/config"
 )
 
 

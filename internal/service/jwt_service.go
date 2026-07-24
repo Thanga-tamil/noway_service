@@ -2,7 +2,7 @@ package service
 
 import (
 	"encoding/json"
-	"gateway/internal/utils"
+	"github.com/Thanga-tamil/noway_service/internal/utils"
 	"os"
 	"time"
 

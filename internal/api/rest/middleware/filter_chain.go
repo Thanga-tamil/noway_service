@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"gateway/internal/config"
+	"github.com/Thanga-tamil/noway_service/internal/config"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
